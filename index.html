@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Tracker</title>
+<style>
+  /* Add this to the <style> block in index.html */
+.navigation {
+    display: flex;
+    gap: 5px;
+    background-color: #1a1a1a;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.navigation a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+.navigation a:hover {
+    background-color: #333;
+}
+.navigation a.active {
+    background-color: #1db954;
+    font-weight: bold;
+}
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #0d0d0d;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    font-size: 2em;
+    margin-bottom: 10px; /* Adjusted margin */
+  }
+  /* --- NEW: CSS FOR SETTINGS GROUP --- */
+  .settings-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background-color: #1a1a1a;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .settings-group label {
+    font-size: 0.9em;
+  }
+  .settings-group input[type="number"] {
+    width: 60px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 5px;
+    font-size: 1em;
+    text-align: center;
+  }
+  /* --- END NEW CSS --- */
+  .input-group {
+    display: flex;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+  input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px 0 0 10px;
+    outline: none;
+    font-size: 1em;
+    background-color: #fff;
+    color: #000;
+  }
+  button.add-btn {
+    background-color: #1db954;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+  .subject {
+    background-color: #1a1a1a;
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    box-shadow: 0px 2px 6px rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.2s ease;
+  }
+  .subject:hover {
+    transform: scale(1.02);
+  }
+  .subject-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .subject-name {
+    font-weight: bold;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    word-break: break-word;
+  }
+  .stats {
+    font-size: 0.9em;
+    color: #aaa;
+  }
+  .progress-container {
+    width: 100%;
+    height: 8px;
+    background-color: #333;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+  }
+  .calculator-text {
+    font-size: 0.9em;
+    font-style: italic;
+    color: #ddd;
+    text-align: center;
+    padding: 4px;
+    background-color: #252525;
+    border-radius: 6px;
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  button {
+      flex: 1;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+  }
+  button:hover {
+      opacity: 0.9;
+  }
+  button.present-btn {
+    background-color: #28a745;
+    color: white;
+  }
+  button.absent-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  button.edit-btn {
+    background-color: #ffc107;
+    color: black;
+  }
+  button.delete-btn {
+    background-color: #6c757d;
+    color: white;
+  }
+  button:disabled {
+      background-color: #333;
+      color: #777;
+      cursor: not-allowed;
+  }
+  .dates-log {
+    font-size: 0.8em;
+    color: #bbb;
+    margin-top: 5px;
+    word-break: break-word;
+  }
+  img.icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+  }
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .modal-content {
+    background-color: #2a2a2a;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .modal-content h2 { margin: 0; text-align: center; }
+  .modal-content p { margin: 0; text-align: center; line-height: 1.5; }
+  .modal-content input[type="text"] { border-radius: 8px; }
+  .modal-buttons { display: flex; gap: 10px; }
+  .modal-buttons button { padding: 10px; font-size: 1em; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<h1>📅 Attendance Tracker</h1>
+<nav class="navigation">
+  <a href="index.html" class="active">Tracker</a>
+  <a href="analytics.html">Analytics & Timetable</a>
+</nav>
+
+<div class="settings-group">
+  <label for="goalInput">Minimum Attendance Goal (%):</label>
+  <input type="number" id="goalInput" min="1" max="100">
+</div>
+<div class="input-group">
+  <input id="subjectInput" type="text" placeholder="Enter subject name">
+  <button class="add-btn" onclick="addSubject()">Add</button>
+</div>
+
+<div id="subjectsList"></div>
+
+<div id="editModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h2>Edit Subject Name</h2>
+        <input type="text" id="editSubjectInput" placeholder="New subject name">
+        <div class="modal-buttons">
+            <button id="saveEditBtn" class="present-btn">Save</button>
+            <button id="cancelEditBtn" class="delete-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h2>Confirm Deletion</h2>
+        <p id="deleteModalText">Are you sure?</p>
+        <div class="modal-buttons">
+            <button id="confirmDeleteBtn" class="absent-btn">Delete</button>
+            <button id="cancelDeleteBtn" class="delete-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+  // Get DOM Elements
+  const editModal = document.getElementById('editModal');
+  const editSubjectInput = document.getElementById('editSubjectInput');
+  const saveEditBtn = document.getElementById('saveEditBtn');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+  const deleteModal = document.getElementById('deleteModal');
+  const deleteModalText = document.getElementById('deleteModalText');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  const goalInput = document.getElementById('goalInput'); // NEW
+
+  let subjects = JSON.parse(localStorage.getItem("subjects")) || [];
+  // --- NEW: Load goal from localStorage or set a default ---
+  let attendanceGoal = parseInt(localStorage.getItem('attendanceGoal')) || 75;
+
+  // --- NEW: Function to initialize settings ---
+  function initializeSettings() {
+    goalInput.value = attendanceGoal;
+  }
+  
+  // --- NEW: Event listener for the goal input ---
+  goalInput.addEventListener('input', (e) => {
+    const newGoal = parseInt(e.target.value);
+    if (newGoal >= 1 && newGoal <= 100) {
+      attendanceGoal = newGoal;
+      localStorage.setItem('attendanceGoal', attendanceGoal);
+      renderSubjects(); // Re-render everything with the new goal
+    }
+  });
+
+  // Data migration logic...
+  (function migrateData() { /* ... */ })();
+
+  function saveSubjects() {
+    localStorage.setItem("subjects", JSON.stringify(subjects));
+  }
+
+  function renderSubjects() {
+    const list = document.getElementById("subjectsList");
+    list.innerHTML = "";
+    subjects.forEach((subj, index) => {
+      const presentCount = subj.history.filter(entry => entry.status === 'present').length;
+      const totalCount = subj.history.length;
+      const percentage = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+      
+      // --- UPDATED: Use the dynamic attendanceGoal variable ---
+      let progressColor = "#dc3545"; // Red (below threshold)
+      if (percentage >= attendanceGoal) {
+        progressColor = "#28a745"; // Green (at or above goal)
+      } else if (percentage >= attendanceGoal - 10) { // e.g., if goal is 75, this is 65-74
+        progressColor = "#ffc107"; // Orange (approaching goal)
+      }
+
+      // --- UPDATED: Calculator uses dynamic goal ---
+      let calculatorText = "Mark attendance to see your status.";
+      const goalPercent = attendanceGoal / 100; // Convert to decimal for calculation
+
+      if (totalCount > 0) {
+        if (percentage >= attendanceGoal) {
+          const canMiss = Math.floor((presentCount - goalPercent * totalCount) / goalPercent);
+          if (canMiss > 0) {
+            calculatorText = `You can safely miss the next ${canMiss} class${canMiss > 1 ? 'es' : ''}.`;
+          } else {
+            calculatorText = `You're exactly at the ${attendanceGoal}% goal!`;
+          }
+        } else {
+          const mustAttend = Math.ceil((goalPercent * totalCount - presentCount) / (1 - goalPercent));
+          calculatorText = `Attend the next ${mustAttend} class${mustAttend > 1 ? 'es' : ''} to reach ${attendanceGoal}%.`;
+        }
+      }
+      
+      const div = document.createElement("div");
+      div.className = "subject";
+      const historyLog = subj.history.map(entry => {
+          const icon = entry.status === 'present' ? '✅' : '❌';
+          return `${entry.date} ${icon}`;
+      }).join(", ") || "No records yet";
+
+      div.innerHTML = `
+        <div class="subject-header">
+          <div class="subject-name">
+            <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/book.png"/>
+            ${subj.name}
+          </div>
+          <div class="stats">${presentCount} / ${totalCount} (${percentage}%)</div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width:${percentage}%; background-color:${progressColor};"></div>
+        </div>
+        <div class="calculator-text">${calculatorText}</div>
+        <div class="buttons">
+          <button class="present-btn" onclick="markAttendance(${index}, 'present')">Present</button>
+          <button class="absent-btn" onclick="markAttendance(${index}, 'absent')">Absent</button>
+        </div>
+        <div class="buttons">
+          <button onclick="undoLast(${index})" ${totalCount === 0 ? 'disabled' : ''}>Undo</button>
+          <button class="edit-btn" onclick="openEditModal(${index})">Edit</button>
+          <button class="delete-btn" onclick="openDeleteModal(${index})">Delete</button>
+        </div>
+        <div class="dates-log">
+          ${historyLog}
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  // All other functions (addSubject, markAttendance, modals, etc.) remain the same
+  function addSubject() {
+    const input = document.getElementById("subjectInput");
+    const name = input.value.trim();
+    if (name === "") { alert("Please enter a subject name!"); return; }
+    subjects.push({ name, history: [] });
+    saveSubjects();
+    renderSubjects();
+    input.value = "";
+  }
+  function markAttendance(index, status) {
+    const today = new Date().toLocaleDateString();
+    subjects[index].history.push({ date: today, status: status });
+    saveSubjects();
+    renderSubjects();
+  }
+  function undoLast(index) {
+      if (subjects[index] && subjects[index].history.length > 0) {
+          subjects[index].history.pop();
+          saveSubjects();
+          renderSubjects();
+      }
+  }
+  function openEditModal(index) {
+    editModal.dataset.editingIndex = index; 
+    editSubjectInput.value = subjects[index].name;
+    editModal.classList.remove('hidden');
+    editSubjectInput.focus();
+  }
+  function closeEditModal() { editModal.classList.add('hidden'); }
+  saveEditBtn.addEventListener('click', () => {
+    const newName = editSubjectInput.value.trim();
+    const index = editModal.dataset.editingIndex;
+    if (newName && index !== undefined) {
+      subjects[index].name = newName;
+      saveSubjects(); renderSubjects(); closeEditModal();
+    } else { alert("Please enter a valid name."); }
+  });
+  cancelEditBtn.addEventListener('click', closeEditModal);
+  editModal.addEventListener('click', (event) => { if (event.target === editModal) closeEditModal(); });
+  function openDeleteModal(index) {
+    deleteModal.dataset.deletingIndex = index;
+    deleteModalText.textContent = `Are you sure you want to delete "${subjects[index].name}"? This action cannot be undone.`;
+    deleteModal.classList.remove('hidden');
+  }
+  function closeDeleteModal() { deleteModal.classList.add('hidden'); }
+  confirmDeleteBtn.addEventListener('click', () => {
+    const index = deleteModal.dataset.deletingIndex;
+    if (index !== undefined) {
+      subjects.splice(index, 1);
+      saveSubjects(); renderSubjects(); closeDeleteModal();
+    }
+  });
+  cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+  deleteModal.addEventListener('click', (event) => { if (event.target === deleteModal) closeDeleteModal(); });
+  
+  // --- Initial Setup Calls ---
+  initializeSettings(); // NEW: Set the goal input's initial value
+  renderSubjects(); // Render subjects using the loaded or default goal
+</script>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day {
+  padding: 6px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.day.present {
+  background-color: #4ade80;
+  color: white;
+}
+
+.day.absent {
+  background-color: #f87171;
+  color: white;
+}
+
+.day.other-month {
+  opacity: 0.4;
+}
